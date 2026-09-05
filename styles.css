@@ -1036,6 +1036,23 @@ input::placeholder,textarea::placeholder {
   color:var(--primary);
   border-bottom-color:var(--primary)
 }
+.source-tabs.catalog-tabs {
+  flex-wrap:wrap;
+  gap:0 16px;
+  padding:0;
+  margin-bottom:12px
+}
+.catalog-tabs button {
+  font-size:13px;
+  padding:8px 0
+}
+#catalog-count {
+  margin-top:12px
+}
+#catalog-results:focus-visible {
+  outline:2px solid var(--primary);
+  outline-offset:2px
+}
 .source-dropzone {
   width:100%;
   min-height:176px;

@@ -4,6 +4,18 @@
   const URL_SOURCE = 'https://gamers-hack.com/tftimg/set-18';
   const raster = /\.(png|jpe?g|webp|avif)(?:[?#]|$)/i;
   const forbidden = /(?:avatar|favicon|tracking|spacer|pixel|badge|site-logo|gravatar)/i;
+  const CATEGORIES = { champion: 'チャンピオン', trait: '特性', item: 'アイテム', augment: 'オーグメント', tactician: 'タクティシャン', arena: 'アリーナ', charms: 'チャーム', 'region-portal': '地域ポータル', regalia: 'レガリア', mission: 'ミッション', queue: 'キュー', sprite: 'スプライト', 'stage-round-data': 'ステージ・ラウンド', 'augment-container': 'オーグメント枠', other: 'その他' };
+  function categoryOf(item) {
+    try {
+      const url = new URL(item.url);
+      const category = url.hostname === 'raw.githubusercontent.com' ? url.pathname.match(/^\/noxelisdev\/TFT_DDragon\/[^/]+\/img\/([^/]+)\//)?.[1] : null;
+      return Object.hasOwn(CATEGORIES, category) ? category : 'other';
+    } catch { return 'other'; }
+  }
+  function filterCatalog(items, category = 'champion', query = '') {
+    const q = query.trim().toLocaleLowerCase('ja');
+    return items.filter(item => categoryOf(item) === category && (!q || item.name.toLocaleLowerCase('ja').includes(q) || item.url.toLowerCase().includes(q)));
+  }
   function imageURL(value, base = URL_SOURCE) {
     if (typeof value !== 'string' || value.length > 4096) return null;
     try { const u = new URL(value.replace(/&amp;/g, '&'), base); return ['http:', 'https:'].includes(u.protocol) ? u.href : null; } catch { return null; }
@@ -104,5 +116,5 @@
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'tft-assets.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 15000);
   }
   const bookmarklet = 'javascript:(' + bookmarkletBody.toString() + ')()';
-  window.TFTSources = { URL_SOURCE, imageURL, nameFromURL, parseHTML, fetchCatalog, parseCatalogFile, fetchImage, bookmarklet };
+  window.TFTSources = { URL_SOURCE, CATEGORIES, categoryOf, filterCatalog, imageURL, nameFromURL, parseHTML, fetchCatalog, parseCatalogFile, fetchImage, bookmarklet };
 })();

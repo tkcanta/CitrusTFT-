@@ -10,6 +10,7 @@
   let history = [], future = [], lastHistoryKey = '', lastHistoryTime = 0;
   let activePanel = 'basic', sourcePurpose = 'background', sourceTab = 'local';
   let catalog = [], catalogAttempted = false, sourceEpoch = 0, importBusy = false;
+  let catalogCategory = 'champion', catalogLimit = 200;
   let renderPending = false, saveTimer = null, fontTimer = null, toastTimer = null;
   let initialized = false, dbPromise = null, saveRevision = 0, persistedAssets = new Set();
   let pointer = null, snapLines = [], dragLayer = null, lastSelection = { start: 0, end: 0 };
@@ -479,12 +480,31 @@
   }
   async function refreshCatalog() {
     catalogAttempted = true; $('source-notice').textContent = '同梱の素材一覧を読み込んでいます…';
-    try { catalog = await S.fetchCatalog(); $('source-notice').textContent = `${catalog.length}件の素材を読み込みました。画像名で検索して選んでください。`; renderCatalog(); }
+    try { catalog = await S.fetchCatalog(); $('source-notice').textContent = `${catalog.length}件の素材を読み込みました。カテゴリと画像名で選んでください。`; renderCatalogTabs(); renderCatalog(); }
     catch (e) { $('source-notice').textContent = e.message; }
   }
+  function renderCatalogTabs() {
+    const counts = new Map();
+    catalog.forEach(item => { const key = S.categoryOf(item); counts.set(key, (counts.get(key) || 0) + 1); });
+    const categories = Object.keys(S.CATEGORIES).filter(key => counts.has(key));
+    catalogCategory = categories.includes('champion') ? 'champion' : categories[0] || 'other';
+    catalogLimit = 200;
+    $('catalog-tabs').replaceChildren(...categories.map(key => {
+      const button = document.createElement('button'); button.type = 'button'; button.id = 'catalog-tab-' + key;
+      button.dataset.catalogCategory = key; button.setAttribute('role', 'tab'); button.setAttribute('aria-controls', 'catalog-results');
+      button.textContent = `${S.CATEGORIES[key]} (${counts.get(key)})`; return button;
+    }));
+  }
   function renderCatalog() {
-    const q = $('asset-search').value.trim().toLocaleLowerCase('ja');
-    const entries = catalog.filter(e => !q || e.name.toLocaleLowerCase('ja').includes(q) || e.url.toLowerCase().includes(q)).slice(0, 200);
+    $('catalog-tabs').querySelectorAll('button').forEach(button => {
+      const active = button.dataset.catalogCategory === catalogCategory;
+      button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
+    });
+    $('catalog-results').setAttribute('aria-labelledby', 'catalog-tab-' + catalogCategory);
+    const matches = S.filterCatalog(catalog, catalogCategory, $('asset-search').value);
+    const entries = matches.slice(0, catalogLimit);
+    $('catalog-count').textContent = `${S.CATEGORIES[catalogCategory]}：${matches.length}件中 ${entries.length}件を表示`;
+    $('catalog-more').hidden = entries.length >= matches.length;
     $('source-grid').replaceChildren(...entries.map(e => {
       const b = document.createElement('button'); b.type = 'button'; b.dataset.catalogUrl = e.url; b.dataset.catalogName = e.name; b.title = e.name;
       const img = document.createElement('img'); img.loading = 'lazy'; img.referrerPolicy = 'no-referrer'; img.src = e.url; img.alt = e.name;
@@ -808,12 +828,13 @@
     editSelected(l => l[key] = C.clamp(value,min,max) / (key === 'opacity' ? 100 : 1));
   }));
   $('allow-fallback').addEventListener('change', updateFontUI);
-  $('asset-search').addEventListener('input', renderCatalog);
+  $('asset-search').addEventListener('input', () => { catalogLimit = 200; renderCatalog(); });
+  $('catalog-more').addEventListener('click', () => { catalogLimit += 200; renderCatalog(); });
   $('image-url').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); importURL($('image-url').value); } });
   $('image-file').addEventListener('change', () => handleFiles($('image-file').files));
   $('project-file').addEventListener('change', async () => { const f = $('project-file').files[0]; if (!f) return; try { await loadProjectFile(f); } catch(e) { toast(e.message,6000); } });
   $('catalog-file').addEventListener('change', async () => {
-    try { const f = $('catalog-file').files[0]; if (!f) return; catalog = await S.parseCatalogFile(f); catalogAttempted = true; $('source-notice').textContent = `${catalog.length}件の素材一覧を読み込みました。`; setSourceTab('site'); renderCatalog(); }
+    try { const f = $('catalog-file').files[0]; if (!f) return; catalog = await S.parseCatalogFile(f); catalogAttempted = true; $('source-notice').textContent = `${catalog.length}件の素材一覧を読み込みました。`; renderCatalogTabs(); setSourceTab('site'); renderCatalog(); }
     catch(e) { showSourceError(e.message); }
   });
   $('font-file').addEventListener('change', async () => { try { if ($('font-file').files[0]) await loadLocalFont($('font-file').files[0]); } catch(e) { toast('フォントを読み込めませんでした。' + e.message,6000); } });
@@ -849,6 +870,7 @@
       if (button.hasAttribute('data-close-dialog')) { button.closest('dialog').close(); return; }
       if (button.dataset.panel) { switchPanel(button.dataset.panel,true); return; }
       if (button.dataset.sourceTab) { setSourceTab(button.dataset.sourceTab); return; }
+      if (button.dataset.catalogCategory) { catalogCategory = button.dataset.catalogCategory; catalogLimit = 200; renderCatalog(); return; }
       if (button.dataset.openSource) { openSource(button.dataset.openSource, button.dataset.startTab || 'local'); return; }
       if (button.dataset.selectLayer) { selectLayer(button.dataset.selectLayer,true); return; }
       if (button.dataset.visibility) { toggleVisibility(button.dataset.visibility); return; }

@@ -3972,6 +3972,23 @@ input::placeholder,textarea::placeholder {
   color:var(--primary);
   border-bottom-color:var(--primary)
 }
+.source-tabs.catalog-tabs {
+  flex-wrap:wrap;
+  gap:0 16px;
+  padding:0;
+  margin-bottom:12px
+}
+.catalog-tabs button {
+  font-size:13px;
+  padding:8px 0
+}
+#catalog-count {
+  margin-top:12px
+}
+#catalog-results:focus-visible {
+  outline:2px solid var(--primary);
+  outline-offset:2px
+}
 .source-dropzone {
   width:100%;
   min-height:176px;
@@ -4657,8 +4674,9 @@ input::placeholder,textarea::placeholder {
 <section aria-labelledby="source-tab-site" hidden="" id="source-site" role="tabpanel">
 <div class="source-site-actions"><a class="gfu-button" data-variant="outlined" href="https://gamers-hack.com/tftimg/set-18" rel="noopener noreferrer" target="_blank">素材サイトを開く<span data-icon="open_in_new"></span></a><button class="gfu-button" data-action="refresh-source" data-variant="text" type="button"><span data-icon="refresh"></span>一覧を読み込む</button></div>
 <p class="source-notice" id="source-notice">同梱の素材一覧を読み込みます。画像の表示・追加にはインターネット接続が必要です。</p>
-<label class="gfu-search"><span data-icon="search"></span><input aria-label="素材を検索" id="asset-search" placeholder="画像名で検索" type="search"/></label>
-<div class="source-grid" id="source-grid"></div>
+<div aria-label="素材カテゴリ" class="source-tabs catalog-tabs" id="catalog-tabs" role="tablist"></div>
+<label class="gfu-search"><span data-icon="search"></span><input aria-label="選択中のカテゴリから素材を検索" id="asset-search" placeholder="このカテゴリ内で画像名を検索" type="search"/></label>
+<div id="catalog-results" role="tabpanel" tabindex="0"><p class="gfu-caption muted" id="catalog-count" aria-live="polite"></p><div class="source-grid" id="source-grid"></div><button class="gfu-button" data-variant="outlined" hidden="" id="catalog-more" type="button">さらに200件表示</button></div>
 <details class="adjustments"><summary>一覧を直接読み込めないとき<span data-icon="info"></span></summary><div class="stack"><p class="gfu-body">素材サイトから保存した画像は「手元の画像」で使用できます。一覧を持ち込みたい場合は、下のリンクをブックマークバーへドラッグし、素材サイトを開いてからそのブックマークを押してください。</p><a class="gfu-button" data-variant="outlined" href="#" id="asset-bookmarklet">素材一覧を保存</a><p class="gfu-caption muted">表示中ページの画像 URL 一覧を JSON で保存します。取得した一覧は次のボタンから読み込みます。画像本体の読込制限は解除しません。</p><button class="gfu-button" data-action="import-catalog" data-variant="outlined" type="button">一覧 JSON / 保存した HTML を読み込む</button></div></details>
 </section>
 <section aria-labelledby="source-tab-url" hidden="" id="source-url" role="tabpanel"><div class="gfu-field"><label class="gfu-field__label" for="image-url">画像ファイルの URL</label><div class="gfu-field__control"><input autocomplete="off" class="gfu-field__input" id="image-url" placeholder="https://…/image.png" type="url"/></div><p class="gfu-field__support">ページの URL ではなく、画像そのものの URL を指定。</p></div><button class="gfu-button" data-action="load-url" data-variant="filled" id="load-url" type="button"><span data-icon="add"></span>この画像を使う</button><p class="gfu-caption muted">配信元が外部読込を制限している画像は、いったん保存して「手元の画像」から追加してください。</p></section>
@@ -5860,6 +5878,18 @@ window.TFTCatalog = [{"url":"https://raw.githubusercontent.com/noxelisdev/TFT_DD
   const URL_SOURCE = 'https://gamers-hack.com/tftimg/set-18';
   const raster = /\.(png|jpe?g|webp|avif)(?:[?#]|$)/i;
   const forbidden = /(?:avatar|favicon|tracking|spacer|pixel|badge|site-logo|gravatar)/i;
+  const CATEGORIES = { champion: 'チャンピオン', trait: '特性', item: 'アイテム', augment: 'オーグメント', tactician: 'タクティシャン', arena: 'アリーナ', charms: 'チャーム', 'region-portal': '地域ポータル', regalia: 'レガリア', mission: 'ミッション', queue: 'キュー', sprite: 'スプライト', 'stage-round-data': 'ステージ・ラウンド', 'augment-container': 'オーグメント枠', other: 'その他' };
+  function categoryOf(item) {
+    try {
+      const url = new URL(item.url);
+      const category = url.hostname === 'raw.githubusercontent.com' ? url.pathname.match(/^\/noxelisdev\/TFT_DDragon\/[^/]+\/img\/([^/]+)\//)?.[1] : null;
+      return Object.hasOwn(CATEGORIES, category) ? category : 'other';
+    } catch { return 'other'; }
+  }
+  function filterCatalog(items, category = 'champion', query = '') {
+    const q = query.trim().toLocaleLowerCase('ja');
+    return items.filter(item => categoryOf(item) === category && (!q || item.name.toLocaleLowerCase('ja').includes(q) || item.url.toLowerCase().includes(q)));
+  }
   function imageURL(value, base = URL_SOURCE) {
     if (typeof value !== 'string' || value.length > 4096) return null;
     try { const u = new URL(value.replace(/&amp;/g, '&'), base); return ['http:', 'https:'].includes(u.protocol) ? u.href : null; } catch { return null; }
@@ -5960,7 +5990,7 @@ window.TFTCatalog = [{"url":"https://raw.githubusercontent.com/noxelisdev/TFT_DD
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'tft-assets.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 15000);
   }
   const bookmarklet = 'javascript:(' + bookmarkletBody.toString() + ')()';
-  window.TFTSources = { URL_SOURCE, imageURL, nameFromURL, parseHTML, fetchCatalog, parseCatalogFile, fetchImage, bookmarklet };
+  window.TFTSources = { URL_SOURCE, CATEGORIES, categoryOf, filterCatalog, imageURL, nameFromURL, parseHTML, fetchCatalog, parseCatalogFile, fetchImage, bookmarklet };
 })();
 
 </script>
@@ -5977,6 +6007,7 @@ window.TFTCatalog = [{"url":"https://raw.githubusercontent.com/noxelisdev/TFT_DD
   let history = [], future = [], lastHistoryKey = '', lastHistoryTime = 0;
   let activePanel = 'basic', sourcePurpose = 'background', sourceTab = 'local';
   let catalog = [], catalogAttempted = false, sourceEpoch = 0, importBusy = false;
+  let catalogCategory = 'champion', catalogLimit = 200;
   let renderPending = false, saveTimer = null, fontTimer = null, toastTimer = null;
   let initialized = false, dbPromise = null, saveRevision = 0, persistedAssets = new Set();
   let pointer = null, snapLines = [], dragLayer = null, lastSelection = { start: 0, end: 0 };
@@ -6446,12 +6477,31 @@ window.TFTCatalog = [{"url":"https://raw.githubusercontent.com/noxelisdev/TFT_DD
   }
   async function refreshCatalog() {
     catalogAttempted = true; $('source-notice').textContent = '同梱の素材一覧を読み込んでいます…';
-    try { catalog = await S.fetchCatalog(); $('source-notice').textContent = `${catalog.length}件の素材を読み込みました。画像名で検索して選んでください。`; renderCatalog(); }
+    try { catalog = await S.fetchCatalog(); $('source-notice').textContent = `${catalog.length}件の素材を読み込みました。カテゴリと画像名で選んでください。`; renderCatalogTabs(); renderCatalog(); }
     catch (e) { $('source-notice').textContent = e.message; }
   }
+  function renderCatalogTabs() {
+    const counts = new Map();
+    catalog.forEach(item => { const key = S.categoryOf(item); counts.set(key, (counts.get(key) || 0) + 1); });
+    const categories = Object.keys(S.CATEGORIES).filter(key => counts.has(key));
+    catalogCategory = categories.includes('champion') ? 'champion' : categories[0] || 'other';
+    catalogLimit = 200;
+    $('catalog-tabs').replaceChildren(...categories.map(key => {
+      const button = document.createElement('button'); button.type = 'button'; button.id = 'catalog-tab-' + key;
+      button.dataset.catalogCategory = key; button.setAttribute('role', 'tab'); button.setAttribute('aria-controls', 'catalog-results');
+      button.textContent = `${S.CATEGORIES[key]} (${counts.get(key)})`; return button;
+    }));
+  }
   function renderCatalog() {
-    const q = $('asset-search').value.trim().toLocaleLowerCase('ja');
-    const entries = catalog.filter(e => !q || e.name.toLocaleLowerCase('ja').includes(q) || e.url.toLowerCase().includes(q)).slice(0, 200);
+    $('catalog-tabs').querySelectorAll('button').forEach(button => {
+      const active = button.dataset.catalogCategory === catalogCategory;
+      button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
+    });
+    $('catalog-results').setAttribute('aria-labelledby', 'catalog-tab-' + catalogCategory);
+    const matches = S.filterCatalog(catalog, catalogCategory, $('asset-search').value);
+    const entries = matches.slice(0, catalogLimit);
+    $('catalog-count').textContent = `${S.CATEGORIES[catalogCategory]}：${matches.length}件中 ${entries.length}件を表示`;
+    $('catalog-more').hidden = entries.length >= matches.length;
     $('source-grid').replaceChildren(...entries.map(e => {
       const b = document.createElement('button'); b.type = 'button'; b.dataset.catalogUrl = e.url; b.dataset.catalogName = e.name; b.title = e.name;
       const img = document.createElement('img'); img.loading = 'lazy'; img.referrerPolicy = 'no-referrer'; img.src = e.url; img.alt = e.name;
@@ -6775,12 +6825,13 @@ window.TFTCatalog = [{"url":"https://raw.githubusercontent.com/noxelisdev/TFT_DD
     editSelected(l => l[key] = C.clamp(value,min,max) / (key === 'opacity' ? 100 : 1));
   }));
   $('allow-fallback').addEventListener('change', updateFontUI);
-  $('asset-search').addEventListener('input', renderCatalog);
+  $('asset-search').addEventListener('input', () => { catalogLimit = 200; renderCatalog(); });
+  $('catalog-more').addEventListener('click', () => { catalogLimit += 200; renderCatalog(); });
   $('image-url').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); importURL($('image-url').value); } });
   $('image-file').addEventListener('change', () => handleFiles($('image-file').files));
   $('project-file').addEventListener('change', async () => { const f = $('project-file').files[0]; if (!f) return; try { await loadProjectFile(f); } catch(e) { toast(e.message,6000); } });
   $('catalog-file').addEventListener('change', async () => {
-    try { const f = $('catalog-file').files[0]; if (!f) return; catalog = await S.parseCatalogFile(f); catalogAttempted = true; $('source-notice').textContent = `${catalog.length}件の素材一覧を読み込みました。`; setSourceTab('site'); renderCatalog(); }
+    try { const f = $('catalog-file').files[0]; if (!f) return; catalog = await S.parseCatalogFile(f); catalogAttempted = true; $('source-notice').textContent = `${catalog.length}件の素材一覧を読み込みました。`; renderCatalogTabs(); setSourceTab('site'); renderCatalog(); }
     catch(e) { showSourceError(e.message); }
   });
   $('font-file').addEventListener('change', async () => { try { if ($('font-file').files[0]) await loadLocalFont($('font-file').files[0]); } catch(e) { toast('フォントを読み込めませんでした。' + e.message,6000); } });
@@ -6816,6 +6867,7 @@ window.TFTCatalog = [{"url":"https://raw.githubusercontent.com/noxelisdev/TFT_DD
       if (button.hasAttribute('data-close-dialog')) { button.closest('dialog').close(); return; }
       if (button.dataset.panel) { switchPanel(button.dataset.panel,true); return; }
       if (button.dataset.sourceTab) { setSourceTab(button.dataset.sourceTab); return; }
+      if (button.dataset.catalogCategory) { catalogCategory = button.dataset.catalogCategory; catalogLimit = 200; renderCatalog(); return; }
       if (button.dataset.openSource) { openSource(button.dataset.openSource, button.dataset.startTab || 'local'); return; }
       if (button.dataset.selectLayer) { selectLayer(button.dataset.selectLayer,true); return; }
       if (button.dataset.visibility) { toggleVisibility(button.dataset.visibility); return; }
