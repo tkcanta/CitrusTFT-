@@ -50,13 +50,8 @@
     return [...results.values()];
   }
   async function fetchCatalog() {
-    let response;
-    try { response = await fetch(URL_SOURCE, { mode: 'cors', credentials: 'omit', signal: AbortSignal.timeout(16000) }); }
-    catch { throw new Error('素材サイトの一覧を直接読み込めませんでした。通信状態、またはサイト側の外部読込制限が原因です。「手元の画像」か、下の一覧取り込みを使用してください。'); }
-    if (!response.ok) throw new Error(`素材サイトが HTTP ${response.status} を返しました。画像ファイルからの追加は利用できます。`);
-    const items = parseHTML(await response.text(), response.url || URL_SOURCE);
-    if (!items.length) throw new Error('ページは取得できましたが、静的HTML内に画像一覧が見つかりませんでした。素材サイト上で「素材一覧を保存」を実行し、そのJSONを取り込んでください。');
-    return items;
+    if (!Array.isArray(window.TFTCatalog) || !window.TFTCatalog.length) throw new Error('同梱の素材一覧が見つかりません。ページを再読み込みするか、最新版をダウンロードしてください。');
+    return window.TFTCatalog.map(item => ({ ...item }));
   }
   async function parseCatalogFile(file) {
     if (file.size > 12 * 1024 * 1024) throw new Error('一覧ファイルは12 MB以内にしてください。');

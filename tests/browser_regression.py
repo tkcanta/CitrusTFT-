@@ -123,7 +123,7 @@ async def main():
   catalog=await page.evaluate('''() => TFTSources.parseHTML('<a href="/full/xayah.png"><img src="/thumb/xayah.png" alt="ザヤ"></a><img data-src="https://assets.example/a.webp" alt="アイテム"><img src="javascript:alert(1)"><script>window.PWNED=true</script>','https://gamers-hack.com/tftimg/set-18')''')
   ok('素材HTMLを安全に解析・高解像度リンクを優先',any(x['url']=='https://gamers-hack.com/full/xayah.png' for x in catalog) and all(x['url'].startswith('http') for x in catalog) and await page.evaluate('!window.PWNED'),catalog)
   await page.locator('#tab-basic').click();await page.locator('[data-start-tab="site"]').click();await page.wait_for_timeout(1000)
-  notice=await page.locator('#source-notice').inner_text();ok('指定サイト取得失敗を明示','読み込め' in notice or '制限' in notice or '取得でき' in notice,notice)
+  notice=await page.locator('#source-notice').inner_text();ok('通信遮断時も同梱一覧を表示','件の素材を読み込みました' in notice and await page.locator('#source-grid button').count()>0,notice)
   await page.locator('#source-dialog [data-close-dialog]').click()
   # Export: strict font gate; allowance; actual downloads.
   await page.locator('[data-action="export"]').click()

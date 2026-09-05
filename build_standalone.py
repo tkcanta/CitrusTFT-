@@ -15,7 +15,7 @@ for name in ('vendor/gforce.css', 'styles.css'):
     if count != 1:
         raise RuntimeError(f'Expected exactly one stylesheet reference: {name}')
 blocks = []
-for name in ('vendor/gforce.js', 'assets.js', 'core.js', 'sources.js', 'app.js'):
+for name in ('vendor/gforce.js', 'assets.js', 'core.js', 'catalog.js', 'sources.js', 'app.js'):
     pattern = r'<script\b[^>]*src="' + re.escape(name) + r'"[^>]*>\s*</script>'
     html, count = re.subn(pattern, '', html)
     if count != 1:

@@ -13,6 +13,7 @@
 <script defer="" src="vendor/gforce.js"></script>
 <script defer="" src="assets.js"></script>
 <script defer="" src="core.js"></script>
+<script defer="" src="catalog.js"></script>
 <script defer="" src="sources.js"></script>
 <script defer="" src="app.js"></script>
 </head>
@@ -50,7 +51,8 @@
 <div class="gfu-field">
 <div class="section-label"><label class="gfu-field__label" for="headline">メインの赤文字</label><span class="auto-label">1行に自動フィット</span></div>
 <div class="gfu-field__control main-text-control"><input autocomplete="off" class="gfu-field__input" id="headline" maxlength="100" placeholder="例：ザヤ構成" spellcheck="false" type="text" value="ザヤ構成"/></div>
-<label class="range-field" for="headline-tracking"><span>文字間<output id="headline-tracking-value">25%</output></span><input class="gfu-slider__input" id="headline-tracking" max="200" min="0" step="1" type="range" value="25"/></label><p class="gfu-field__support">Noto Serif JP 900 · 白＋黒の二重縁</p>
+<label class="range-field" for="headline-tracking"><span>文字間<output id="headline-tracking-value">0%</output></span><input class="gfu-slider__input" id="headline-tracking" max="100" min="-100" step="1" type="range" value="0"/></label>
+<div aria-label="赤文字の配置" class="gfu-segmented" id="headline-align"><button aria-pressed="false" class="gfu-segmented__button" data-value="left" type="button">左寄せ</button><button aria-pressed="true" class="gfu-segmented__button" data-value="center" type="button">中央寄せ</button></div><p class="gfu-field__support">Noto Serif JP 900 · 白＋黒の二重縁</p>
 </div>
 <div class="gfu-field subtitle-field">
 <div class="section-label"><label class="gfu-field__label" for="subtitle">上の白文字</label><span class="auto-label" id="subtitle-auto-label">大きさ自動</span></div>
@@ -162,7 +164,7 @@
 <section aria-labelledby="source-tab-local" id="source-local" role="tabpanel"><button class="source-dropzone" data-action="pick-file" id="source-dropzone" type="button"><span data-icon="upload"></span><span>クリック、または画像をドロップ</span><small>PNG / JPG / WebP / AVIF · 1枚 20 MB まで</small></button><p class="gfu-caption muted">クリップボードの画像を Ctrl+V で貼り付けても追加できます。</p><div class="section-label"><h3 class="gfu-title">最近使った素材</h3></div><div class="source-recents" id="source-recents"></div></section>
 <section aria-labelledby="source-tab-site" hidden="" id="source-site" role="tabpanel">
 <div class="source-site-actions"><a class="gfu-button" data-variant="outlined" href="https://gamers-hack.com/tftimg/set-18" rel="noopener noreferrer" target="_blank">素材サイトを開く<span data-icon="open_in_new"></span></a><button class="gfu-button" data-action="refresh-source" data-variant="text" type="button"><span data-icon="refresh"></span>一覧を読み込む</button></div>
-<p class="source-notice" id="source-notice">指定サイトから画像一覧を取得します。サイトが外部からの読込を許可している必要があります。</p>
+<p class="source-notice" id="source-notice">同梱の素材一覧を読み込みます。画像の表示・追加にはインターネット接続が必要です。</p>
 <label class="gfu-search"><span data-icon="search"></span><input aria-label="素材を検索" id="asset-search" placeholder="画像名で検索" type="search"/></label>
 <div class="source-grid" id="source-grid"></div>
 <details class="adjustments"><summary>一覧を直接読み込めないとき<span data-icon="info"></span></summary><div class="stack"><p class="gfu-body">素材サイトから保存した画像は「手元の画像」で使用できます。一覧を持ち込みたい場合は、下のリンクをブックマークバーへドラッグし、素材サイトを開いてからそのブックマークを押してください。</p><a class="gfu-button" data-variant="outlined" href="#" id="asset-bookmarklet">素材一覧を保存</a><p class="gfu-caption muted">表示中ページの画像 URL 一覧を JSON で保存します。取得した一覧は次のボタンから読み込みます。画像本体の読込制限は解除しません。</p><button class="gfu-button" data-action="import-catalog" data-variant="outlined" type="button">一覧 JSON / 保存した HTML を読み込む</button></div></details>

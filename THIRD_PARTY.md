@@ -20,4 +20,4 @@ Noto Serif JP 900 / Noto Sans JP 900をGoogle Fontsから実行時に読み込�
 
 ## ゲーム素材
 
-外部のゲーム画像・TFT全素材カタログは同梱していません。ユーザーが画像を読み込む仕組みと、指定サイトの画像一覧取得アダプターを実装しています。提供元の利用案内をご確認ください。
+ゲーム画像本体は同梱していません。2026年9月5日に https://gamers-hack.com/tftimg/set-18/ から抽出した画像URL・名前4,844件を `catalog.js` に収録しています。画像配信元は https://github.com/noxelisdev/TFT_DDragon です。提供元の利用案内をご確認ください。

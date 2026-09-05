@@ -316,7 +316,8 @@
   function syncUI(force = false) {
     setValue('headline', state.headline, force); setValue('subtitle', state.subtitle.text, force);
     setValue('headline-tracking', state.headlineTracking); setValue('subtitle-tracking', state.subtitle.tracking);
-    $('headline-tracking-value').textContent = trackingLabel(state.headlineTracking); $('subtitle-tracking-value').textContent = trackingLabel(state.subtitle.tracking);
+    $('headline-tracking-value').textContent = Math.round(state.headlineTracking) + '%'; $('subtitle-tracking-value').textContent = trackingLabel(state.subtitle.tracking);
+    setPressed('headline-align', state.headlineAlign);
     setValue('quick-tag', state.texts.find(t => t.id === 'tag')?.text || '', force);
     setValue('band-enabled', state.band.enabled); setValue('band-text', state.band.text, force); setValue('band-tracking', state.band.tracking); $('band-options').hidden = !state.band.enabled;
     $('band-tracking-value').textContent = trackingLabel(state.band.tracking);
@@ -477,8 +478,8 @@
     if (name === 'site' && !catalogAttempted) refreshCatalog();
   }
   async function refreshCatalog() {
-    catalogAttempted = true; $('source-notice').textContent = '指定サイトから画像一覧を読み込んでいます…';
-    try { catalog = await S.fetchCatalog(); $('source-notice').textContent = `${catalog.length}件の画像URLを取得しました。使用する画像を選んでください。`; renderCatalog(); }
+    catalogAttempted = true; $('source-notice').textContent = '同梱の素材一覧を読み込んでいます…';
+    try { catalog = await S.fetchCatalog(); $('source-notice').textContent = `${catalog.length}件の素材を読み込みました。画像名で検索して選んでください。`; renderCatalog(); }
     catch (e) { $('source-notice').textContent = e.message; }
   }
   function renderCatalog() {
@@ -783,7 +784,7 @@
     'bg-zoom': v => state.background.zoom = C.clamp(v,1,4),
     'bg-blur': v => state.background.blur = C.clamp(v,0,14),
     'bg-shade': v => state.background.shade = C.clamp(v,0,.8),
-    'headline-tracking': v => state.headlineTracking = C.trackingPercent(v),
+    'headline-tracking': v => state.headlineTracking = C.clamp(v,-100,100),
     'subtitle-tracking': v => state.subtitle.tracking = C.trackingPercent(v),
     'band-tracking': v => state.band.tracking = C.trackingPercent(v),
     'logo-size': v => state.logo.size = C.clamp(v,100,240),
@@ -862,6 +863,7 @@
       if (button.dataset.value !== undefined) {
         const parent = button.parentElement.id, value = button.dataset.value;
         if (parent === 'wrap-mode') mutate(s => s.subtitle.wrap = value);
+        else if (parent === 'headline-align') mutate(s => s.headlineAlign = value === 'left' ? 'left' : 'center');
         else if (parent === 'logo-position') mutate(s => s.logo.side = value);
         else if (parent === 'text-color') mutate(s => { const l = C.getLayer(s,selected); if (l && Object.hasOwn(C.COLORS,value)) l.color = value; });
         else if (parent === 'layer-align') editSelected(l => { const o = scene.objects.get(selected); const width = o ? C.bounds({...o,rotation:l.rotation}).w : 0; l.x = value === 'left' ? 24 + width/2 : value === 'right' ? C.W - 24 - width/2 : C.W/2; });

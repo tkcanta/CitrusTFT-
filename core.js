@@ -38,6 +38,7 @@
   }
   function invalidateMetrics() { metricCache.clear(); }
   const trackingPercent = value => clamp(value ?? 25, 0, 200);
+  const headlineTrackingPercent = value => clamp(value ?? 0, -100, 100);
   const trackingPx = (size, value) => size * .08 * trackingPercent(value) / 100;
   function binaryFit(test, max = 320) {
     let lo = 1, hi = max;
@@ -49,7 +50,8 @@
       version: 1,
       background: { asset: null, name: '', zoom: 1, panX: 0, panY: 0, blur: 0, shade: .25, flip: false },
       headline: 'ザヤ構成',
-      headlineTracking: 25,
+      headlineTracking: 0,
+      headlineAlign: 'center',
       subtitle: { text: '新オーグで一気に最強へ！', marks: [], wrap: 'auto', tracking: 25 },
       band: { enabled: false, text: 'オーグ解説付き', tracking: 25 },
       logo: { enabled: true, side: 'right', size: 164, margin: 0, asset: 'builtin-logo' },
@@ -67,7 +69,7 @@
   }
   function textRun(text, size, start = 0, tracking = 25, family = SANS) {
     let advance = 0, left = 0, right = 0, asc = 0, desc = 0;
-    const space = trackingPx(size, tracking);
+    const space = family === SERIF ? size * .08 * headlineTrackingPercent(tracking) / 100 : trackingPx(size, tracking);
     const units = graphemes(text);
     const glyphs = units.map((g, i) => {
       const m = metric(g.text, size, family);
@@ -117,7 +119,7 @@
     const objects = new Map();
     let mainFont = 240, mainTop = 480;
     if (s.headline && s.visibility.headline) {
-      const tracking = trackingPercent(s.headlineTracking);
+      const tracking = headlineTrackingPercent(s.headlineTracking);
       mainFont = binaryFit(f => {
         const run = textRun(s.headline, f, 0, tracking, SERIF), pad = f * .075 + 2;
         return run.width + 2 * pad <= W - 28 && run.asc + run.desc + 2 * pad + 4 <= 244;
@@ -125,7 +127,7 @@
       const run = textRun(s.headline, mainFont, 0, tracking, SERIF), pad = mainFont * .075 + 2;
       const w = run.width + 2 * pad, h = run.asc + run.desc + 2 * pad + 4;
       mainTop = H - 18 - h;
-      objects.set('headline', { id: 'headline', type: 'headline', font: mainFont, run, tracking, pad, w, h, x: W / 2, y: mainTop + h / 2, rotation: 0, locked: true });
+      objects.set('headline', { id: 'headline', type: 'headline', font: mainFont, run, tracking, pad, w, h, x: s.headlineAlign === 'left' ? 14 + w / 2 : W / 2, y: mainTop + h / 2, rotation: 0, locked: true });
     }
     let subFont = 0, subTop = mainTop;
     if (s.subtitle.text && s.visibility.subtitle) {
@@ -344,7 +346,8 @@
     const b = input.background || {};
     s.background = { asset: asset(b.asset), name: clean(b.name, 140), zoom: clamp(b.zoom ?? 1, 1, 4), panX: clamp(b.panX ?? 0, -1, 1), panY: clamp(b.panY ?? 0, -1, 1), blur: clamp(b.blur ?? 0, 0, 14), shade: clamp(b.shade ?? .25, 0, .8), flip: !!b.flip };
     s.headline = clean(input.headline, 100);
-    s.headlineTracking = trackingPercent(input.headlineTracking);
+    s.headlineTracking = headlineTrackingPercent(input.headlineTracking);
+    s.headlineAlign = input.headlineAlign === 'left' ? 'left' : 'center';
     const sub = input.subtitle || {};
     s.subtitle.text = clean(sub.text, 160, 2); s.subtitle.wrap = sub.wrap === 'single' ? 'single' : 'auto'; s.subtitle.tracking = trackingPercent(sub.tracking);
     s.subtitle.marks = (Array.isArray(sub.marks) ? sub.marks : []).slice(0, 160).filter(m => m && typeof m === 'object').map(m => ({ start: Math.floor(clamp(m.start, 0, s.subtitle.text.length)), end: Math.floor(clamp(m.end, 0, s.subtitle.text.length)) })).filter(m => m.end > m.start);
