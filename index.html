@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html data-density="comfortable" data-theme="light" lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light" name="color-scheme"/>
+<meta content="no-referrer" name="referrer"/>
+<title>TFT サムネイル編集</title>
+<link href="vendor/gforce.css" rel="stylesheet"/>
+<link href="styles.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@900&amp;family=Noto+Serif+JP:wght@900&amp;display=swap" id="google-fonts" media="print" rel="stylesheet"/>
+<script defer="" src="vendor/gforce.js"></script>
+<script defer="" src="assets.js"></script>
+<script defer="" src="core.js"></script>
+<script defer="" src="sources.js"></script>
+<script defer="" src="app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#canvas">プレビューへ移動</a>
+<main class="editor">
+<aside aria-label="編集パネル" class="controls">
+<nav aria-label="編集項目" class="panel-tabs" role="tablist">
+<button aria-controls="panel-basic" aria-selected="true" data-panel="basic" id="tab-basic" role="tab" type="button"><span data-icon="edit"></span>つくる</button>
+<button aria-controls="panel-images" aria-selected="false" data-panel="images" id="tab-images" role="tab" tabindex="-1" type="button"><span data-icon="widgets"></span>画像</button>
+<button aria-controls="panel-layers" aria-selected="false" data-panel="layers" id="tab-layers" role="tab" tabindex="-1" type="button"><span data-ticon="layers"></span>重ね順</button>
+</nav>
+<div class="panel-scroll">
+<section aria-labelledby="tab-basic" id="panel-basic" role="tabpanel">
+<div class="control-section">
+<div class="section-label"><h2 class="gfu-title">背景</h2><button class="gfu-button" data-open-source="background" data-size="sm" data-start-tab="site" data-variant="text" type="button">SET 18 素材<span data-icon="open_in_new"></span></button></div>
+<button class="background-picker" data-open-source="background" id="background-picker" type="button">
+<img alt="選択した背景" hidden="" id="background-thumb"/>
+<span class="background-picker__empty" id="background-empty"><span data-ticon="image"></span><span>背景を選ぶ</span><small>画像をドロップしても追加できます</small></span>
+<span class="background-picker__replace" hidden="" id="background-replace"><span data-icon="edit"></span>背景を変更</span>
+</button>
+<div class="background-info" hidden="" id="background-info"><span id="background-name"></span><button aria-label="背景を削除" class="gfu-icon-button" data-action="remove-background" type="button"><span data-icon="close"></span></button></div>
+<details class="adjustments" id="background-adjustments">
+<summary>トリミング・見やすさ<span data-icon="tune"></span></summary>
+<div class="stack">
+<button aria-pressed="false" class="gfu-button" data-action="pan-background" data-variant="outlined" id="pan-background" type="button"><span data-ticon="move"></span>背景をドラッグで調整</button>
+<label class="range-field" for="bg-zoom"><span>拡大率<output id="bg-zoom-value">100%</output></span><input class="gfu-slider__input" id="bg-zoom" max="4" min="1" step="0.01" type="range" value="1"/></label>
+<label class="range-field" for="bg-blur"><span>背景のぼかし<output id="bg-blur-value">0</output></span><input class="gfu-slider__input" id="bg-blur" max="14" min="0" step="0.5" type="range" value="0"/></label>
+<label class="range-field" for="bg-shade"><span>文字の背後を暗く<output id="bg-shade-value">25%</output></span><input class="gfu-slider__input" id="bg-shade" max="0.8" min="0" step="0.01" type="range" value="0.25"/></label>
+<div class="row"><label class="gfu-check"><input class="gfu-check__input" id="bg-flip" type="checkbox"/><span>背景を左右反転</span></label><button class="gfu-button" data-action="reset-background" data-size="sm" data-variant="text" type="button">中央に戻す</button></div>
+</div>
+</details>
+</div>
+<div class="control-section">
+<div class="gfu-field">
+<div class="section-label"><label class="gfu-field__label" for="headline">メインの赤文字</label><span class="auto-label">1行に自動フィット</span></div>
+<div class="gfu-field__control main-text-control"><input autocomplete="off" class="gfu-field__input" id="headline" maxlength="100" placeholder="例：ザヤ構成" spellcheck="false" type="text" value="ザヤ構成"/></div>
+<label class="range-field" for="headline-tracking"><span>文字間<output id="headline-tracking-value">25%</output></span><input class="gfu-slider__input" id="headline-tracking" max="200" min="0" step="1" type="range" value="25"/></label><p class="gfu-field__support">Noto Serif JP 900 · 白＋黒の二重縁</p>
+</div>
+<div class="gfu-field subtitle-field">
+<div class="section-label"><label class="gfu-field__label" for="subtitle">上の白文字</label><span class="auto-label" id="subtitle-auto-label">大きさ自動</span></div>
+<div class="gfu-field__control"><textarea class="gfu-field__textarea" id="subtitle" maxlength="160" placeholder="例：新オーグで一気に最強へ！" rows="2" spellcheck="false">新オーグで一気に最強へ！</textarea></div>
+<div aria-label="選択した文字の色" class="highlight-actions">
+<button class="gfu-button" data-size="sm" data-variant="tonal" disabled="" id="mark-yellow" type="button"><span class="color-dot" data-color="yellow"></span>選択部分を黄色</button>
+<button class="gfu-button" data-size="sm" data-variant="text" disabled="" id="mark-white" type="button">白に戻す</button>
+</div>
+<p class="gfu-field__support" id="selection-help">入力欄で文字を選択して、黄色を指定。</p>
+<div aria-label="強調箇所の確認" class="marked-preview" hidden="" id="marked-preview"></div><label class="range-field" for="subtitle-tracking"><span>文字間<output id="subtitle-tracking-value">25%</output></span><input class="gfu-slider__input" id="subtitle-tracking" max="200" min="0" step="1" type="range" value="25"/></label>
+</div>
+<div class="section-label compact-label"><span class="gfu-caption">白文字の改行</span><div aria-label="白文字の改行" class="gfu-segmented small-segments" id="wrap-mode"><button aria-pressed="true" class="gfu-segmented__button" data-value="auto" type="button">自動</button><button aria-pressed="false" class="gfu-segmented__button" data-value="single" type="button">1行</button></div></div>
+</div>
+<div class="control-section">
+<div class="section-label"><h2 class="gfu-title">黄色の自由文字</h2><button class="gfu-button" data-action="add-text" data-size="sm" data-variant="text" type="button"><span data-icon="add"></span>追加</button></div>
+<div class="gfu-field"><label class="gfu-visually-hidden" for="quick-tag">最初の自由文字</label><div class="gfu-field__control"><input class="gfu-field__input" id="quick-tag" maxlength="80" placeholder="例：SET18" spellcheck="false" type="text" value="SET18"/></div></div>
+<p class="gfu-caption muted">位置はプレビュー上でドラッグ。詳しい編集は「重ね順」から。</p>
+</div>
+<div class="control-section">
+<div class="section-label"><label class="gfu-label" for="band-enabled">左上の黒帯</label><label class="gfu-switch"><input class="gfu-switch__input" id="band-enabled" type="checkbox"/><span class="gfu-visually-hidden">黒帯を表示</span></label></div>
+<div class="stack" hidden="" id="band-options"><div class="gfu-field"><label class="gfu-visually-hidden" for="band-text">黒帯の文字</label><div class="gfu-field__control"><input class="gfu-field__input" id="band-text" maxlength="36" spellcheck="false" value="オーグ解説付き"/></div></div><label class="range-field" for="band-tracking"><span>文字間<output id="band-tracking-value">25%</output></span><input class="gfu-slider__input" id="band-tracking" max="200" min="0" step="1" type="range" value="25"/></label><p class="gfu-caption muted">参考画像から採った黄→金の固定グラデーション。縁取りなし。ロゴが左なら帯は右へ。</p></div>
+</div>
+<div class="control-section logo-section">
+<div class="section-label"><label class="gfu-label" for="logo-enabled">Citrus ロゴ</label><label class="gfu-switch"><input checked="" class="gfu-switch__input" id="logo-enabled" type="checkbox"/><span class="gfu-visually-hidden">ロゴを表示</span></label></div>
+<div aria-label="ロゴの位置" class="gfu-segmented" id="logo-position"><button aria-pressed="false" class="gfu-segmented__button" data-value="left" type="button">左上</button><button aria-pressed="true" class="gfu-segmented__button" data-value="right" type="button">右上</button></div>
+<details class="adjustments"><summary>ロゴの微調整<span data-icon="tune"></span></summary><div class="stack"><label class="range-field" for="logo-size"><span>大きさ<output id="logo-size-value">164 px</output></span><input class="gfu-slider__input" id="logo-size" max="240" min="100" type="range" value="164"/></label><label class="range-field" for="logo-margin"><span>端からの余白<output id="logo-margin-value">0 px</output></span><input class="gfu-slider__input" id="logo-margin" max="40" min="0" type="range" value="0"/></label><div class="row"><button class="gfu-button" data-open-source="logo" data-size="sm" data-variant="text" type="button">ロゴを差し替え</button><button class="gfu-button" data-action="reset-logo" data-size="sm" data-variant="text" type="button">元に戻す</button></div></div></details>
+</div>
+</section>
+<section aria-labelledby="tab-images" hidden="" id="panel-images" role="tabpanel">
+<div class="control-section">
+<div class="section-label"><h2 class="gfu-title">キャラクター</h2><span class="gfu-caption muted">専用 1 枠</span></div>
+<p class="gfu-body muted">背景と文字の間に、大きく配置します。</p>
+<button class="asset-upload" data-open-source="character" type="button"><span data-ticon="person"></span><span>キャラクターを追加</span><small>背景透過 PNG・WebP 推奨</small></button>
+<div id="character-card"></div>
+<p class="gfu-caption muted">背景が残っている画像の自動切り抜きは行いません。透過画像は透明な余白を自動で除きます。</p>
+</div>
+<div class="control-section">
+<div class="section-label"><h2 class="gfu-title">追加画像</h2><span class="gfu-badge" id="overlay-count">0 / 5</span></div>
+<p class="gfu-body muted">アイコン、アイテム、装飾など。重ね順・大きさ・角度を自由に。</p>
+<button class="gfu-button full-width" data-open-source="overlay" data-variant="outlined" id="add-overlay" type="button"><span data-icon="add"></span>画像を追加</button>
+<div class="image-cards" id="overlay-cards"></div>
+<p class="gfu-caption muted">背景・ロゴ・専用キャラクターは5枚に数えません。</p>
+</div>
+<div class="control-section">
+<h2 class="gfu-title">最近使った素材</h2>
+<p class="gfu-caption muted">このブラウザに保存。素材を押して、用途を選べます。</p>
+<div class="recent-assets" id="recent-assets"></div>
+</div>
+</section>
+<section aria-labelledby="tab-layers" hidden="" id="panel-layers" role="tabpanel">
+<div class="control-section">
+<div class="section-label"><h2 class="gfu-title">重ね順</h2><span class="gfu-caption muted">上ほど手前</span></div>
+<p class="gfu-caption muted">行をドラッグ、または選択して矢印で並べ替え。</p>
+<div aria-label="レイヤー一覧" class="layer-list" id="layer-list"></div>
+<div aria-label="レイヤー操作" class="layer-commands"><button aria-label="1つ手前へ" class="gfu-icon-button" data-action="layer-up" data-tooltip="1つ手前へ" type="button"><span data-icon="arrow_up"></span></button><button aria-label="1つ奥へ" class="gfu-icon-button" data-action="layer-down" data-tooltip="1つ奥へ" type="button"><span data-icon="arrow_down"></span></button><span class="flex-spacer"></span><button aria-label="選択レイヤーを複製" class="gfu-icon-button" data-action="duplicate" data-tooltip="複製" type="button"><span data-icon="content_copy"></span></button><button aria-label="選択レイヤーを削除" class="gfu-icon-button" data-action="delete" data-tooltip="削除" type="button"><span data-icon="delete"></span></button></div>
+</div>
+<div class="control-section" id="inspector-empty"><span data-ticon="cursor"></span><p class="gfu-body muted">プレビューか一覧から<br/>編集するレイヤーを選択。</p></div>
+<div class="control-section" hidden="" id="inspector">
+<div class="section-label"><h2 class="gfu-title" id="inspector-title">レイヤー</h2><button aria-label="選択を解除" class="gfu-icon-button" data-action="deselect" type="button"><span data-icon="close"></span></button></div>
+<div hidden="" id="fixed-inspector"><p class="gfu-body muted" id="fixed-inspector-text"></p><button class="gfu-button" data-action="edit-fixed" data-variant="outlined" type="button">入力欄へ</button></div>
+<div id="transform-inspector">
+<div class="stack" hidden="" id="text-inspector">
+<div class="gfu-field"><label class="gfu-field__label" for="layer-text">文字</label><div class="gfu-field__control"><textarea class="gfu-field__textarea" id="layer-text" maxlength="100" rows="2" spellcheck="false"></textarea></div></div>
+<div class="row"><span class="gfu-caption">文字色</span><div aria-label="自由文字の色" class="color-palette" id="text-color"><button aria-label="黄色" aria-pressed="true" data-value="yellow" type="button"><span class="color-dot" data-color="yellow"></span></button><button aria-label="白色" aria-pressed="false" data-value="white" type="button"><span class="color-dot" data-color="white"></span></button><button aria-label="赤色" aria-pressed="false" data-value="red" type="button"><span class="color-dot" data-color="red"></span></button></div></div>
+<label class="range-field" for="layer-tracking"><span>文字間<output id="layer-tracking-value">25%</output></span><input class="gfu-slider__input" id="layer-tracking" max="200" min="0" step="1" type="range" value="25"/></label><label class="gfu-check"><input class="gfu-check__input" id="text-double-outline" type="checkbox"/><span>白い外縁も付ける</span></label>
+</div>
+<div class="number-grid"><label class="number-field">横位置 X<input id="layer-x" max="2560" min="-1280" step="1" type="number"/></label><label class="number-field">縦位置 Y<input id="layer-y" max="1440" min="-720" step="1" type="number"/></label></div>
+<label class="range-field" for="layer-size"><span>大きさ<output id="layer-size-value"></output></span><input class="gfu-slider__input" id="layer-size" max="1600" min="30" step="1" type="range" value="400"/></label>
+<div class="number-grid"><label class="number-field">回転 °<input id="layer-rotation" max="180" min="-180" step="1" type="number" value="0"/></label><label class="number-field">不透明度 %<input id="layer-opacity" max="100" min="0" step="1" type="number" value="100"/></label></div>
+<div aria-label="簡単配置" class="gfu-segmented" id="layer-align"><button class="gfu-segmented__button" data-value="left" type="button">左寄せ</button><button class="gfu-segmented__button" data-value="center" type="button">中央</button><button class="gfu-segmented__button" data-value="right" type="button">右寄せ</button></div>
+<div class="row wrap"><label class="gfu-check"><input class="gfu-check__input" id="layer-flip" type="checkbox"/><span>左右反転</span></label><label class="gfu-check"><input class="gfu-check__input" id="layer-locked" type="checkbox"/><span>位置をロック</span></label></div>
+<div class="row"><button class="gfu-button" data-action="auto-place" data-size="sm" data-variant="text" type="button">空きスペースへ</button><button class="gfu-button" data-action="reset-transform" data-size="sm" data-variant="text" type="button">角度を戻す</button></div>
+</div>
+</div>
+</section>
+</div>
+<div class="panel-footer"><span class="save-dot" id="save-dot"></span><span id="save-status">このブラウザに自動保存</span><button aria-label="操作方法" class="gfu-icon-button" data-action="help" type="button"><span data-icon="help"></span></button></div>
+</aside>
+<section aria-label="サムネイルのプレビューと書き出し" class="workspace">
+<div aria-label="編集操作" class="workspace-toolbar" role="toolbar">
+<div class="toolbar-group"><button aria-label="元に戻す" class="gfu-icon-button" data-action="undo" data-tooltip="元に戻す Ctrl+Z" disabled="" id="undo" type="button"><span data-ticon="undo"></span></button><button aria-label="やり直す" class="gfu-icon-button" data-action="redo" data-tooltip="やり直す Ctrl+Shift+Z" disabled="" id="redo" type="button"><span data-ticon="redo"></span></button></div>
+<span class="toolbar-divider"></span>
+<button class="gfu-button" data-action="auto-layout" data-size="sm" data-variant="text" id="auto-layout" type="button"><span data-ticon="align"></span><span>自動で整える</span></button>
+<span class="flex-spacer"></span>
+<button aria-label="操作方法" class="gfu-icon-button toolbar-help" data-action="help" data-tooltip="操作方法" type="button"><span data-icon="help"></span></button>
+<button class="gfu-button" data-action="project-menu" data-variant="outlined" type="button"><span data-icon="folder"></span><span class="hide-on-small">プロジェクト</span></button>
+<button class="gfu-button" data-action="export" data-variant="filled" type="button"><span data-icon="download"></span><span>書き出す</span></button>
+</div>
+<div class="stage-area" id="stage-area">
+<div class="stage-meta"><span>1280 × 720 <span class="muted"> / 16:9</span></span><span id="canvas-mode">仕上がりプレビュー</span><button aria-pressed="false" class="gfu-button" data-action="guides" data-size="sm" data-variant="text" id="toggle-guides" type="button"><span data-ticon="grid"></span>ガイド</button></div>
+<div class="stage-frame" id="stage-frame">
+<canvas aria-label="サムネイルの編集プレビュー。画像と自由文字はドラッグで配置できます。" height="1440" id="canvas" role="img" tabindex="0" width="2560"></canvas>
+<canvas aria-hidden="true" height="720" id="interaction" width="1280"></canvas>
+<button class="canvas-empty" data-open-source="background" id="canvas-empty" type="button"><span data-ticon="image"></span><span>背景を選んで、はじめる</span><small>画像をドロップ / Ctrl+V で貼り付け</small></button>
+<div class="drop-message" hidden="" id="drop-message"><span data-icon="add"></span><span id="drop-label">背景画像をここにドロップ</span></div>
+</div>
+<div class="stage-bottom"><span id="interaction-hint">画像・自由文字をドラッグで移動。四隅で拡縮、丸いハンドルで回転。</span><button class="gfu-button" data-action="pan-background" data-size="sm" data-variant="text" hidden="" id="end-pan" type="button">背景調整を終了</button><span id="zoom-label">100%</span></div>
+</div>
+<div class="preview-dock">
+<div class="mini-preview-group"><div class="section-label"><span class="gfu-label">小さくしたときの見え方</span><span class="gfu-caption muted">320 px</span></div><canvas aria-label="320ピクセル幅の縮小プレビュー" height="360" id="mini-preview" width="640"></canvas></div>
+<div class="quality-group"><div class="section-label"><span class="gfu-label">仕上がりチェック</span><button class="gfu-button" data-action="deselect" data-size="sm" data-variant="text" type="button">選択枠を外す</button></div><div class="quality-items" id="quality-items"></div><div class="font-state" id="font-state"><span aria-hidden="true" class="gfu-spinner"></span><span id="font-status">指定フォントを読み込み中</span><button class="gfu-button" data-action="retry-fonts" data-size="sm" data-variant="text" hidden="" id="font-retry" type="button">再試行</button></div></div>
+</div>
+</section>
+</main>
+<dialog aria-labelledby="source-title" class="gfu-dialog source-dialog" id="source-dialog">
+<div class="dialog-top"><div><h2 class="gfu-subsection-title" id="source-title">背景を選ぶ</h2><p class="gfu-caption muted" id="source-description">画像はブラウザ内で処理します。</p></div><button aria-label="閉じる" class="gfu-icon-button" data-close-dialog="" type="button"><span data-icon="close"></span></button></div>
+<div aria-label="画像の読み込み方法" class="source-tabs" role="tablist"><button aria-controls="source-local" aria-selected="true" data-source-tab="local" id="source-tab-local" role="tab" type="button">手元の画像</button><button aria-controls="source-site" aria-selected="false" data-source-tab="site" id="source-tab-site" role="tab" tabindex="-1" type="button">SET 18 素材</button><button aria-controls="source-url" aria-selected="false" data-source-tab="url" id="source-tab-url" role="tab" tabindex="-1" type="button">画像 URL</button></div>
+<div class="dialog-body">
+<section aria-labelledby="source-tab-local" id="source-local" role="tabpanel"><button class="source-dropzone" data-action="pick-file" id="source-dropzone" type="button"><span data-icon="upload"></span><span>クリック、または画像をドロップ</span><small>PNG / JPG / WebP / AVIF · 1枚 20 MB まで</small></button><p class="gfu-caption muted">クリップボードの画像を Ctrl+V で貼り付けても追加できます。</p><div class="section-label"><h3 class="gfu-title">最近使った素材</h3></div><div class="source-recents" id="source-recents"></div></section>
+<section aria-labelledby="source-tab-site" hidden="" id="source-site" role="tabpanel">
+<div class="source-site-actions"><a class="gfu-button" data-variant="outlined" href="https://gamers-hack.com/tftimg/set-18" rel="noopener noreferrer" target="_blank">素材サイトを開く<span data-icon="open_in_new"></span></a><button class="gfu-button" data-action="refresh-source" data-variant="text" type="button"><span data-icon="refresh"></span>一覧を読み込む</button></div>
+<p class="source-notice" id="source-notice">指定サイトから画像一覧を取得します。サイトが外部からの読込を許可している必要があります。</p>
+<label class="gfu-search"><span data-icon="search"></span><input aria-label="素材を検索" id="asset-search" placeholder="画像名で検索" type="search"/></label>
+<div class="source-grid" id="source-grid"></div>
+<details class="adjustments"><summary>一覧を直接読み込めないとき<span data-icon="info"></span></summary><div class="stack"><p class="gfu-body">素材サイトから保存した画像は「手元の画像」で使用できます。一覧を持ち込みたい場合は、下のリンクをブックマークバーへドラッグし、素材サイトを開いてからそのブックマークを押してください。</p><a class="gfu-button" data-variant="outlined" href="#" id="asset-bookmarklet">素材一覧を保存</a><p class="gfu-caption muted">表示中ページの画像 URL 一覧を JSON で保存します。取得した一覧は次のボタンから読み込みます。画像本体の読込制限は解除しません。</p><button class="gfu-button" data-action="import-catalog" data-variant="outlined" type="button">一覧 JSON / 保存した HTML を読み込む</button></div></details>
+</section>
+<section aria-labelledby="source-tab-url" hidden="" id="source-url" role="tabpanel"><div class="gfu-field"><label class="gfu-field__label" for="image-url">画像ファイルの URL</label><div class="gfu-field__control"><input autocomplete="off" class="gfu-field__input" id="image-url" placeholder="https://…/image.png" type="url"/></div><p class="gfu-field__support">ページの URL ではなく、画像そのものの URL を指定。</p></div><button class="gfu-button" data-action="load-url" data-variant="filled" id="load-url" type="button"><span data-icon="add"></span>この画像を使う</button><p class="gfu-caption muted">配信元が外部読込を制限している画像は、いったん保存して「手元の画像」から追加してください。</p></section>
+</div>
+<p class="dialog-error" hidden="" id="source-error" role="alert"></p>
+</dialog>
+<dialog aria-labelledby="export-title" class="gfu-dialog export-dialog" id="export-dialog">
+<div class="dialog-top"><h2 class="gfu-subsection-title" id="export-title">画像を書き出す</h2><button aria-label="閉じる" class="gfu-icon-button" data-close-dialog="" type="button"><span data-icon="close"></span></button></div>
+<div class="dialog-body stack"><canvas aria-label="書き出しプレビュー" height="540" id="export-preview" width="960"></canvas><div class="gfu-field"><label class="gfu-field__label" for="export-filename">ファイル名</label><div class="gfu-field__control"><input class="gfu-field__input" id="export-filename" maxlength="100" type="text"/></div></div><div><p class="gfu-label">画像サイズ</p><div aria-label="画像サイズ" class="gfu-segmented export-size" id="export-size"><button aria-pressed="true" class="gfu-segmented__button" data-value="1280" type="button">1280 × 720</button><button aria-pressed="false" class="gfu-segmented__button" data-value="1920" type="button">1920 × 1080</button><button aria-pressed="false" class="gfu-segmented__button" data-value="2560" type="button">2560 × 1440</button></div></div><div aria-label="画像形式" class="gfu-segmented" id="export-format"><button aria-pressed="true" class="gfu-segmented__button" data-value="png" type="button">PNG · くっきり</button><button aria-pressed="false" class="gfu-segmented__button" data-value="jpeg" type="button">JPEG · 軽量</button></div><p class="gfu-caption muted">選択枠・ガイドは入りません。文字は出力解像度で描き直します。</p><div class="font-warning" hidden="" id="export-font-warning"><p>指定フォントを確認できていません。このままでは字形が変わります。</p><button class="gfu-button" data-action="retry-fonts" data-variant="outlined" type="button">指定フォントを再読込</button><label class="gfu-check"><input class="gfu-check__input" id="allow-fallback" type="checkbox"/><span>代替フォントでの書き出しを許可</span></label></div><p class="dialog-error" hidden="" id="export-error" role="alert"></p></div>
+<div class="dialog-actions"><button class="gfu-button" data-action="copy-image" data-variant="text" type="button">画像をコピー</button><button class="gfu-button" data-action="download-image" data-variant="filled" id="export-download" type="button"><span data-icon="download"></span>ダウンロード</button></div>
+</dialog>
+<dialog aria-labelledby="project-title" class="gfu-dialog" id="project-dialog"><div class="dialog-top"><h2 class="gfu-subsection-title" id="project-title">プロジェクト</h2><button aria-label="閉じる" class="gfu-icon-button" data-close-dialog="" type="button"><span data-icon="close"></span></button></div><div class="dialog-body stack"><p class="gfu-body muted">編集中の内容と画像を、ひとつのファイルにまとめます。</p><button class="gfu-button" data-action="save-project" data-variant="outlined" type="button"><span data-icon="save"></span>プロジェクトを保存</button><button class="gfu-button" data-action="load-project" data-variant="outlined" type="button"><span data-icon="folder"></span>プロジェクトを開く</button><hr class="gfu-divider"/><button class="gfu-button" data-action="new-project" data-variant="text" type="button">新しいサムネイルを作る</button><p class="gfu-caption muted">自動保存はこのブラウザだけ。移動・バックアップにはファイル保存を使用してください。フォントはプロジェクトに含みません。</p></div></dialog>
+<dialog aria-labelledby="confirm-title" class="gfu-dialog" id="confirm-dialog"><div class="dialog-top"><h2 class="gfu-subsection-title" id="confirm-title">内容を置き換えますか？</h2></div><div class="dialog-body"><p class="gfu-body" id="confirm-message"></p></div><div class="dialog-actions"><button class="gfu-button" data-variant="text" id="confirm-cancel" type="button">キャンセル</button><button class="gfu-button" data-variant="filled" id="confirm-ok" type="button">続ける</button></div></dialog>
+<dialog aria-labelledby="help-title" class="gfu-dialog help-dialog" id="help-dialog"><div class="dialog-top"><h2 class="gfu-subsection-title" id="help-title">操作のヒント</h2><button aria-label="閉じる" class="gfu-icon-button" data-close-dialog="" type="button"><span data-icon="close"></span></button></div><div class="dialog-body stack"><div><h3 class="gfu-title">まずは、背景と2つの文章だけ</h3><p>赤文字は縁取りごと1行に最大化。白文字は赤文字より小さく、長ければ2行に整理します。明示的な改行も使えます。</p></div><div><h3 class="gfu-title">画像・自由文字の配置</h3><p>ドラッグで移動、四隅で等比拡縮、丸いハンドルで回転。「重ね順」の上ほど手前です。Shift＋移動で方向を固定、Shift＋回転で15°刻み。Altで吸着を一時解除します。</p></div><div class="shortcut-list"><span>元に戻す / やり直す</span><kbd>Ctrl Z / Ctrl Shift Z</kbd><span>1 px 移動 / 10 px 移動</span><kbd>矢印 / Shift 矢印</kbd><span>複製 / 削除</span><kbd>Ctrl D / Delete</kbd><span>プロジェクトを保存</span><kbd>Ctrl S</kbd><span>画像を書き出す</span><kbd>Ctrl Shift E</kbd><span>選択解除 / 背景調整終了</span><kbd>Esc</kbd></div><p class="gfu-caption muted">Macでは Ctrl の代わりに ⌘ を使います。日本語変換中は編集ショートカットを実行しません。</p><details class="adjustments"><summary>フォントが読み込めない場合<span data-icon="info"></span></summary><div class="stack"><p>Google Fonts の接続を確認して「再試行」を押してください。手元に指定フォントがある場合は、次から読み込めます。900 / Black のフォントを選んでください。</p><button class="gfu-button" data-action="load-serif-font" data-variant="outlined" type="button">Noto Serif JP 900 を読み込む</button><button class="gfu-button" data-action="load-sans-font" data-variant="outlined" type="button">Noto Sans JP 900 を読み込む</button><p class="gfu-caption muted">ローカルフォントはタブを閉じるまで有効。フォントの種類はファイルの提供元で確認してください。</p></div></details></div></dialog>
+<div aria-live="polite" class="toast" hidden="" id="toast" role="status"></div>
+<div class="busy-indicator" hidden="" id="busy" role="status"><span aria-hidden="true" class="gfu-spinner"></span><span id="busy-text">画像を処理中…</span></div>
+<dialog class="gfu-dialog" id="reuse-dialog" aria-labelledby="reuse-title"><div class="dialog-top"><h2 class="gfu-subsection-title" id="reuse-title">この素材を使う</h2><button type="button" class="gfu-icon-button" data-close-dialog aria-label="閉じる"><span data-icon="close"></span></button></div><div class="dialog-body stack"><img id="reuse-preview" alt="再使用する素材"><p class="gfu-body" id="reuse-name"></p><button type="button" class="gfu-button" data-variant="outlined" data-reuse-purpose="background">背景にする</button><button type="button" class="gfu-button" data-variant="outlined" data-reuse-purpose="character">キャラクターにする</button><button type="button" class="gfu-button" data-variant="outlined" data-reuse-purpose="overlay">追加画像にする（最大5枚）</button></div></dialog>
+<input accept="image/png,image/jpeg,image/webp,image/avif" hidden="" id="image-file" type="file"/>
+<input accept=".json,.tft" hidden="" id="project-file" type="file"/>
+<input accept=".json,.html,.htm" hidden="" id="catalog-file" type="file"/>
+<input accept=".ttf,.otf,.woff,.woff2" hidden="" id="font-file" type="file"/>
+<noscript>このツールを使用するには JavaScript を有効にしてください。</noscript>
+</body>
+</html>

@@ -1,0 +1,427 @@
+{
+  "engine": "144.0.7559.96",
+  "execution": "Chromium DOM injection of standalone HTML; network/font requests denied; opaque-origin persistence fallback tested",
+  "tests": [
+    {
+      "test": "起動・ロゴ画像の復元",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "JavaScript例外なし（起動）",
+      "result": "PASS",
+      "detail": []
+    },
+    {
+      "test": "通信遮断時のフォント警告",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "保存領域制限時の代替案表示",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "赤文字の実寸フィット・縁取りの安全余白",
+      "result": "PASS",
+      "detail": [
+        {
+          "text": "最強",
+          "w": 450.70868896484376,
+          "h": 243.615,
+          "b": {
+            "x": 414.6456555175781,
+            "y": 458.385,
+            "w": 450.70868896484376,
+            "h": 243.615,
+            "right": 865.3543444824219,
+            "bottom": 702
+          },
+          "font": 204.1,
+          "sub": 87.9
+        },
+        {
+          "text": "ザヤ構成",
+          "w": 875.9501831054688,
+          "h": 243.95,
+          "b": {
+            "x": 202.0249084472656,
+            "y": 458.04999999999995,
+            "w": 875.9501831054688,
+            "h": 243.95,
+            "right": 1077.9750915527343,
+            "bottom": 702
+          },
+          "font": 213,
+          "sub": 87.9
+        },
+        {
+          "text": "ピルトーヴァー構成",
+          "w": 1251.9609765625,
+          "h": 162.835,
+          "b": {
+            "x": 14.019511718749982,
+            "y": 539.165,
+            "w": 1251.9609765625,
+            "h": 162.835,
+            "right": 1265.98048828125,
+            "bottom": 702
+          },
+          "font": 138.9,
+          "sub": 63.8
+        },
+        {
+          "text": "WWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "w": 1250.13361328125,
+          "h": 46.555,
+          "b": {
+            "x": 14.933193359374968,
+            "y": 655.445,
+            "w": 1250.13361328125,
+            "h": 46.555,
+            "right": 1265.0668066406251,
+            "bottom": 702.0000000000001
+          },
+          "font": 43.7,
+          "sub": 20.1
+        },
+        {
+          "text": "強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強強",
+          "w": 1246.5315087890624,
+          "h": 23.86,
+          "b": {
+            "x": 16.7342456054688,
+            "y": 678.14,
+            "w": 1246.5315087890624,
+            "h": 23.86,
+            "right": 1263.265754394531,
+            "bottom": 701.9999999999999
+          },
+          "font": 12.4,
+          "sub": 5.7
+        },
+        {
+          "text": "TFT18 / 100%",
+          "w": 1251.715361328125,
+          "h": 209.97,
+          "b": {
+            "x": 14.142319335937486,
+            "y": 492.03,
+            "w": 1251.715361328125,
+            "h": 209.97,
+            "right": 1265.8576806640626,
+            "bottom": 702
+          },
+          "font": 179.8,
+          "sub": 82.7
+        },
+        {
+          "text": "【圧倒的】新オーグ攻略！",
+          "w": 1251.109892578125,
+          "h": 132.845,
+          "b": {
+            "x": 14.445053710937486,
+            "y": 569.155,
+            "w": 1251.109892578125,
+            "h": 132.845,
+            "right": 1265.5549462890626,
+            "bottom": 702
+          },
+          "font": 112.3,
+          "sub": 51.6
+        }
+      ]
+    },
+    {
+      "test": "白文字は赤文字より小さい",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "長い赤文字ほど縮小",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "長い白文字を2行へ自動分割",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "背景ファイルをUIから追加",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "選択部分だけ黄色に変更",
+      "result": "PASS",
+      "detail": [
+        {
+          "start": 0,
+          "end": 4
+        }
+      ]
+    },
+    {
+      "test": "先頭に文字を挿入しても強調範囲を追従",
+      "result": "PASS",
+      "detail": [
+        {
+          "start": 3,
+          "end": 7
+        }
+      ]
+    },
+    {
+      "test": "部分的な白戻し",
+      "result": "PASS",
+      "detail": [
+        {
+          "start": 3,
+          "end": 4
+        },
+        {
+          "start": 6,
+          "end": 7
+        }
+      ]
+    },
+    {
+      "test": "ロゴ左上・黒帯と自由文字は反対側へ",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "透過キャラクターの余白を自動除去",
+      "result": "PASS",
+      "detail": {
+        "id": "asset-mto76qbf-1vee5w0o6ts",
+        "name": "fixture-character.png",
+        "width": 240,
+        "height": 400
+      }
+    },
+    {
+      "test": "キャラクターを背景と文字の間に配置",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "追加画像5枚で追加ボタン無効",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "API側でも6枚目を拒否",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "座標・回転・不透明度を数値で編集",
+      "result": "PASS",
+      "detail": {
+        "id": "image-mto76qkh-o4hhstb8r5s",
+        "asset": "asset-mto76qkf-5begspaeb95",
+        "name": "fixture-icon.png",
+        "w": 360,
+        "x": 620,
+        "y": 260,
+        "rotation": 30,
+        "opacity": 0.75,
+        "flip": false,
+        "locked": false,
+        "visible": true
+      }
+    },
+    {
+      "test": "キャンバスで画像をドラッグ",
+      "result": "PASS",
+      "detail": {
+        "id": "image-mto76qkh-o4hhstb8r5s",
+        "asset": "asset-mto76qkf-5begspaeb95",
+        "name": "fixture-icon.png",
+        "w": 360,
+        "x": 715,
+        "y": 314.99999143342745,
+        "rotation": 0,
+        "opacity": 0.75,
+        "flip": false,
+        "locked": false,
+        "visible": true,
+        "auto": false
+      }
+    },
+    {
+      "test": "四隅ハンドルによる等比拡大",
+      "result": "PASS",
+      "detail": {
+        "before": 360,
+        "after": 449.99995476959594
+      }
+    },
+    {
+      "test": "回転ハンドル・Shiftで15度刻み",
+      "result": "PASS",
+      "detail": 45
+    },
+    {
+      "test": "Shift＋矢印で10px移動",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "ロックした位置は移動しない",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "レイヤー非表示",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "画像の削除",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "削除を取り消す",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "削除をやり直す",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "複製でも上限5枚を保つ",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "日本語変換中は組版・undoを実行しない",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "日本語変換確定を反映",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "入力文字をHTMLとして実行しない",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "自由文字は指定3色のみ",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "素材HTMLを安全に解析・高解像度リンクを優先",
+      "result": "PASS",
+      "detail": [
+        {
+          "url": "https://gamers-hack.com/full/xayah.png",
+          "name": "ザヤ"
+        },
+        {
+          "url": "https://assets.example/a.webp",
+          "name": "アイテム"
+        }
+      ]
+    },
+    {
+      "test": "指定サイト取得失敗を明示",
+      "result": "PASS",
+      "detail": "素材サイトの一覧を直接読み込めませんでした。通信状態、またはサイト側の外部読込制限が原因です。「手元の画像」か、下の一覧取り込みを使用してください。"
+    },
+    {
+      "test": "指定フォント未読込なら書き出しをブロック",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "PNGを1920×1080で実際に書き出し",
+      "result": "PASS",
+      "detail": {
+        "size": [
+          1920,
+          1080
+        ],
+        "bytes": 544674
+      }
+    },
+    {
+      "test": "JPEGを2560×1440で実際に書き出し",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "ガイド表示の有無で完成PNGは変わらない",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "画像を内包した編集プロジェクトを保存",
+      "result": "PASS",
+      "detail": {
+        "assetCount": 7
+      }
+    },
+    {
+      "test": "保存データにフォントバイナリなし",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "プロジェクト再読込で文章・強調・重ね順・変形を復元",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "再読込時の画像ID衝突を回避",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "壊れたプロジェクトは既存状態・素材を変えずに拒否",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "読み込みプロジェクトにも上限検証",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "拡張子を偽装したSVGを拒否",
+      "result": "PASS",
+      "detail": "PNG・JPG・WebP・AVIF形式の画像を選んでください。SVGとGIFには対応していません。"
+    },
+    {
+      "test": "390px幅で横スクロールなし",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "モバイルでも書き出しダイアログが収まる",
+      "result": "PASS",
+      "detail": {
+        "x": 8.037368774414062,
+        "y": 10.577178955078125,
+        "width": 373.92527770996094,
+        "height": 823.0854187011719
+      }
+    },
+    {
+      "test": "一連のUI操作中にJavaScript例外なし",
+      "result": "PASS",
+      "detail": []
+    }
+  ],
+  "pageErrors": []
+}
