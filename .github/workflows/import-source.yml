@@ -1,0 +1,53 @@
+name: Import verified thumbnail editor
+
+on:
+  push:
+    branches: [main]
+    paths: ['.import/manifest.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: citrus-tft-source-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: github.repository == 'tkcanta/CitrusTFT-'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore and verify the supplied source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f .import/manifest.json ]; then
+            echo 'Source import is already complete.'
+            exit 0
+          fi
+          python3 .import/import_source.py
+          for script in core.js app.js assets.js sources.js vendor/gforce.js; do
+            node --check "$script"
+          done
+          python3 build_standalone.py /tmp/citrus-standalone-verified.html
+          cmp TFT-Thumbnail-Editor.html /tmp/citrus-standalone-verified.html
+          python3 - <<'PY'
+          import json, shutil, subprocess
+          from pathlib import Path
+          manifest = json.loads(Path('.import/manifest.json').read_text())
+          paths = [item['path'] for item in manifest['files']]
+          subprocess.run(['git', 'add', '--', *paths], check=True)
+          shutil.rmtree('.import')
+          subprocess.run(['git', 'add', '--all', '--', '.import'], check=True)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat: publish TFT thumbnail editor with letter-spacing controls'
+            git push origin HEAD:main
+          fi
